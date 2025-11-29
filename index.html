@@ -162,7 +162,20 @@
   form.addEventListener("submit", e => {
     e.preventDefault();
 
-    const data = Object.fromEntries(new FormData(form).entries());
+    // Correctly handle checkbox arrays
+const formData = new FormData(form);
+const data = {};
+
+for (const [key, value] of formData.entries()) {
+  if (key.endsWith("[]")) {
+    const cleanKey = key.slice(0, -2); // remove brackets
+    if (!data[cleanKey]) data[cleanKey] = [];
+    data[cleanKey].push(value);
+  } else {
+    data[key] = value;
+  }
+}
+
 
     fetch(scriptURL, {
       method: "POST",
